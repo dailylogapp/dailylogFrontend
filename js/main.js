@@ -47,43 +47,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Seccion para agregar registros a la tabla
   // Manejar el envío del formulario para agregar un nuevo registro
-  
-   // Seleccionar el formulario de agregar registro
-   const addLogForm = document.getElementById("addLogForm");
 
-   // Manejar el envío del formulario para agregar un nuevo registro
-   addLogForm.addEventListener("submit", function (event) {
-       event.preventDefault();
+  // Seleccionar el formulario de agregar registro
+  const addLogForm = document.getElementById("addLogForm");
 
-       const log = {
-           date: document.getElementById("date").value,
-           description: document.getElementById("description").value,
-           store: document.getElementById("store").value,
-           price: parseFloat(document.getElementById("price").value),
-           category: document.getElementById("category").value,
-           paymentMethod: document.getElementById("paymentMethod").value,
-       };
+  // Manejar el envío del formulario para agregar un nuevo registro
+  addLogForm.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-       // Enviar el objeto log al backend para agregarlo a la base de datos
-       axios
-           .post("http://localhost:8080/logs/addlog", log)
-           .then((response) => {
-               // Manejar la respuesta del servidor según sea necesario
-               console.log(response.data); // Imprimir la respuesta del servidor en la consola
+    const log = {
+      date: document.getElementById("date").value,
+      description: document.getElementById("description").value,
+      store: document.getElementById("store").value,
+      price: parseFloat(document.getElementById("price").value),
+      category: document.getElementById("category").value,
+      paymentMethod: document.getElementById("paymentMethod").value,
+    };
 
-               // Cerrar el modal después de agregar el registro
-               const addLogModal = new bootstrap.Modal(document.getElementById("addLogModal"));
-               addLogModal.hide();
+    // Enviar el objeto log al backend para agregarlo a la base de datos
+    axios
+      .post("http://localhost:8080/logs/addlog", log)
+      .then((response) => {
+        // Cerrar el modal después de agregar el registro
+        const addLogModal = bootstrap.Modal.getInstance(
+          document.getElementById("addLogModal")
+        );
+        addLogModal.hide();
 
-               // Recargar la página o actualizar los datos según sea necesario
-               // Aquí puedes recargar la página para que los cambios se reflejen en la tabla automáticamente
-               location.reload(); // Recargar la página
-           })
-           .catch((error) => {
-               console.error("Error al agregar el registro:", error);
-               // Manejar el error según sea necesario (por ejemplo, mostrar un mensaje de error al usuario)
-           });
-   });
+        // Abrir el modal de confirmación con el mensaje del backend
+        const confirmationModalBody = document.getElementById(
+          "confirmationModalBody"
+        );
+        confirmationModalBody.textContent = response.data; // Establecer el mensaje de confirmación en el cuerpo del modal
+        const confirmationModal = new bootstrap.Modal(
+          document.getElementById("confirmationModal")
+        );
+        confirmationModal.show();
+
+        // Añadir evento para recargar la página al cerrar el modal de confirmación
+        document
+          .getElementById("confirmationModal")
+          .addEventListener("hidden.bs.modal", function () {
+            location.reload();
+          });
+      })
+      .catch((error) => {
+        console.error("Error al agregar el registro:", error);
+        // Manejar el error según sea necesario (por ejemplo, mostrar un mensaje de error al usuario)
+      });
+  });
 
   // Seccion graficos
   document
