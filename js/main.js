@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
   let monthlyCategoryChart = null;
 
+  //Tabla de logs
   axios
     .get("http://localhost:8080/logs")
     .then((response) => {
@@ -44,6 +45,47 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("There was an error fetching the logs!", error);
     });
 
+  // Seccion para agregar registros a la tabla
+  // Manejar el envío del formulario para agregar un nuevo registro
+  
+   // Seleccionar el formulario de agregar registro
+   const addLogForm = document.getElementById("addLogForm");
+
+   // Manejar el envío del formulario para agregar un nuevo registro
+   addLogForm.addEventListener("submit", function (event) {
+       event.preventDefault();
+
+       const log = {
+           date: document.getElementById("date").value,
+           description: document.getElementById("description").value,
+           store: document.getElementById("store").value,
+           price: parseFloat(document.getElementById("price").value),
+           category: document.getElementById("category").value,
+           paymentMethod: document.getElementById("paymentMethod").value,
+       };
+
+       // Enviar el objeto log al backend para agregarlo a la base de datos
+       axios
+           .post("http://localhost:8080/logs/addlog", log)
+           .then((response) => {
+               // Manejar la respuesta del servidor según sea necesario
+               console.log(response.data); // Imprimir la respuesta del servidor en la consola
+
+               // Cerrar el modal después de agregar el registro
+               const addLogModal = new bootstrap.Modal(document.getElementById("addLogModal"));
+               addLogModal.hide();
+
+               // Recargar la página o actualizar los datos según sea necesario
+               // Aquí puedes recargar la página para que los cambios se reflejen en la tabla automáticamente
+               location.reload(); // Recargar la página
+           })
+           .catch((error) => {
+               console.error("Error al agregar el registro:", error);
+               // Manejar el error según sea necesario (por ejemplo, mostrar un mensaje de error al usuario)
+           });
+   });
+
+  // Seccion graficos
   document
     .getElementById("filter-form")
     .addEventListener("submit", function (event) {

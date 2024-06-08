@@ -15,47 +15,133 @@
     <!--Libreria ChartJS-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!--Icon-->
+    <link rel="shortcut icon" href="assets/dailylogicon.svg" type="image/x-icon">
+
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="mt-4">Todos los Logs</h1>
-        <table class="table mt-4">
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Descripción</th>
-                    <th scope="col">Tienda</th>
-                    <th scope="col">Precio</th>
-                    <th scope="col">Categoría</th>
-                    <th scope="col">Método de Pago</th>
-                </tr>
-            </thead>
-            <tbody id="logs-list">
-                <!-- Las filas se agregarán aquí -->
-            </tbody>
-        </table>
 
-        <div class="mt-4">
-            <h2>Generar Gráfico de Barras por Categoría</h2>
-            <form id="filter-form">
-                <div class="mb-3">
-                    <label for="category" class="form-label">Seleccionar Categoría:</label>
-                    <select class="form-select" id="category">
-                        <option value="ALIMENTOS">Alimentos</option>
-                        <option value="TRANSPORTE">Transporte</option>
-                        <option value="LIMPIEZA">Limpieza</option>
-                        <!-- Agregar más opciones según las categorías disponibles -->
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary">Generar Gráfico</button>
-            </form>
-
-            <div class="mt-4">
-                <canvas id="stackedBarChart" width="400" height="200"></canvas>
+    <header>
+        <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">
+                    <img src="/assets/dailylogicon.svg" alt="" width="40" height="40"
+                        class="d-inline-block align-text-center">
+                    Dailylog
+                </a>
             </div>
-        </div>
+        </nav>
+    </header>
+
+
+
+    <div class="container">
+        <section id="tabla">
+            <h1 class="mt-4">Todos los Logs</h1>
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Tienda</th>
+                        <th scope="col">Precio</th>
+                        <th scope="col">Categoría</th>
+                        <th scope="col">Método de Pago</th>
+                    </tr>
+                </thead>
+                <tbody id="logs-list">
+                    <!-- Las filas se agregarán aquí -->
+                </tbody>
+            </table>
+
+
+            <!-- Botón para abrir el modal -->
+            <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#addLogModal">
+                Agregar Registro
+            </button>
+
+            <!-- Modal para agregar un nuevo registro -->
+            <div class="modal fade" id="addLogModal" tabindex="-1" aria-labelledby="addLogModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addLogModalLabel">Agregar Registro</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addLogForm">
+                                <div class="mb-3">
+                                    <label for="date" class="form-label">Fecha:</label>
+                                    <input type="date" class="form-control" id="date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Descripción:</label>
+                                    <input type="text" class="form-control" id="description" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="store" class="form-label">Tienda:</label>
+                                    <input type="text" class="form-control" id="store" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Precio:</label>
+                                    <input type="text" class="form-control" id="price" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Categoría:</label>
+                                    <select class="form-select" id="category" required>
+                                        <option value="ALIMENTOS">Alimentos</option>
+                                        <option value="LIMPIEZA">Limpieza</option>
+                                        <option value="TRANSPORTE">Transporte</option>                                        
+                                        <option value="SERVICIOS">Servicios</option>
+                                        <option value="FARMACIA">Farmacia</option>
+                                        <!-- Agregar más opciones según las categorías disponibles -->
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentMethod" class="form-label">Método de Pago:</label>
+                                    <select class="form-select" id="paymentMethod" required>
+                                        <option value="EFECTIVO">Efectivo</option>
+                                        <option value="CREDITO">Credito</option>
+                                        <option value="DEBITO">Debito</option>
+                                        <option value="MP">MP</option>
+                                        <option value="CUENTADNI">Cuenta DNI</option>
+                                        <!-- Agregar más opciones según los métodos de pago disponibles -->
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Agregar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section id="graficos">
+            <div class="mt-4">
+                <h2>Generar Gráfico de Barras por Categoría</h2>
+                <form id="filter-form">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Seleccionar Categoría:</label>
+                        <select class="form-select" id="category">
+                            <option value="ALIMENTOS">Alimentos</option>
+                            <option value="TRANSPORTE">Transporte</option>
+                            <option value="LIMPIEZA">Limpieza</option>
+                            <!-- Agregar más opciones según las categorías disponibles -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generar Gráfico</button>
+                </form>
+
+                <div class="mt-4">
+                    <canvas id="stackedBarChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+        </section>
     </div>
 
     <!-- Scripts de Axios -->
