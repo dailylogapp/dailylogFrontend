@@ -6,16 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logs</title>
 
+    <!-- Icon -->
+    <link rel="shortcut icon" href="assets/dailylogicon.svg" type="image/x-icon">
+
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- Libreria ChartJS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Icon -->
-    <link rel="shortcut icon" href="assets/dailylogicon.svg" type="image/x-icon">
+    <!-- Scripts de Axios -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 
@@ -25,7 +32,8 @@
         <nav class="navbar navbar-light bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                    <img src="/assets/dailylogicon.svg" alt="" width="40" height="40" class="d-inline-block align-text-center">
+                    <img src="/assets/dailylogicon.svg" alt="" width="40" height="40"
+                        class="d-inline-block align-text-center">
                     Dailylog
                 </a>
             </div>
@@ -33,8 +41,39 @@
     </header>
 
     <div class="container">
+
+        <section id="graficos">
+            <h2 class="display-5">Gráficos</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="display-6">Gráfico de totales mensuales</h3>
+                    <canvas id="stackedBarChart" width="400" height="400"></canvas>
+                </div>
+                <div class="col-md-6 mt-4 mt-md-0">
+                    <h3 class="display-6">Gráfico por Categoría</h3>
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <label for="categoryChart" class="form-label">Seleccionar Categoría:</label>
+                            <select class="form-select" id="categoryChart">
+                                <option value="ALIMENTOS">Alimentos</option>
+                                <option value="LIMPIEZA">Limpieza</option>
+                                <option value="TRANSPORTE">Transporte</option>
+                                <option value="SERVICIOS">Servicios</option>
+                                <option value="FARMACIA">Farmacia</option>
+                                <option value="ESPARCIMIENTO">Esparcimiento</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Generar Gráfico</button>
+                    </form>
+                    <div class="mt-4">
+                        <canvas id="chooseCategoryChart" width="400" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="tabla">
-            <h1 class="mt-4">Todos los Logs</h1>
+            <h1 class="mt-4 display-6">Todos los registros</h1>
             <table class="table mt-4">
                 <thead>
                     <tr>
@@ -45,6 +84,7 @@
                         <th scope="col">Precio</th>
                         <th scope="col">Categoría</th>
                         <th scope="col">Método de Pago</th>
+                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="logs-list">
@@ -58,7 +98,8 @@
             </button>
 
             <!-- Modal para agregar un nuevo registro -->
-            <div class="modal fade" id="addLogModal" tabindex="-1" aria-labelledby="addLogModalLabel" aria-hidden="true">
+            <div class="modal fade" id="addLogModal" tabindex="-1" aria-labelledby="addLogModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -84,23 +125,24 @@
                                     <input type="text" class="form-control" id="price" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="category" class="form-label">Categoría:</label>
-                                    <select class="form-select" id="category" required>
+                                    <label for="categoryAdd" class="form-label">Categoría:</label>
+                                    <select class="form-select" id="categoryAdd" required>
                                         <option value="ALIMENTOS">Alimentos</option>
                                         <option value="LIMPIEZA">Limpieza</option>
-                                        <option value="TRANSPORTE">Transporte</option>
                                         <option value="SERVICIOS">Servicios</option>
+                                        <option value="TRANSPORTE">Transporte</option>
                                         <option value="FARMACIA">Farmacia</option>
+                                        <option value="ESPARCIMIENTO">Esparcimiento</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
                                     <label for="paymentMethod" class="form-label">Método de Pago:</label>
                                     <select class="form-select" id="paymentMethod" required>
-                                        <option value="EFECTIVO">Efectivo</option>
-                                        <option value="CREDITO">Crédito</option>
-                                        <option value="DEBITO">Débito</option>
                                         <option value="MP">MP</option>
                                         <option value="CUENTADNI">Cuenta DNI</option>
+                                        <option value="EFECTIVO">Efectivo</option>
+                                        <option value="DEBITO">Débito</option>
+                                        <option value="CREDITO">Crédito</option>
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Agregar</button>
@@ -111,7 +153,8 @@
             </div>
 
             <!-- Modal de confirmación -->
-            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -127,37 +170,101 @@
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section id="graficos">
-            <div class="mt-4">
-                <h2>Generar Gráfico de Barras por Categoría</h2>
-                <form id="filter-form">
-                    <div class="mb-3">
-                        <label for="category" class="form-label">Seleccionar Categoría:</label>
-                        <select class="form-select" id="category">
-                            <option value="ALIMENTOS">Alimentos</option>
-                            <option value="TRANSPORTE">Transporte</option>
-                            <option value="LIMPIEZA">Limpieza</option>
-                        </select>
+            <!-- Modal de confirmación de eliminación -->
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
+                aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirmar Eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Está seguro de que desea eliminar este registro?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteButton">OK</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Generar Gráfico</button>
-                </form>
-
-                <div class="mt-4">
-                    <canvas id="stackedBarChart" width="400" height="200"></canvas>
                 </div>
             </div>
+
+            <!-- Modal de Edición -->
+            <div class="modal fade" id="editLogModal" tabindex="-1" aria-labelledby="editLogModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form id="editLogForm">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editLogModalLabel">Editar Registro</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addLogForm">
+                                    <div class="mb-3">
+                                        <label for="date" class="form-label">Fecha:</label>
+                                        <input type="date" class="form-control" id="edit-date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Descripción:</label>
+                                        <input type="text" class="form-control" id="edit-description" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="store" class="form-label">Tienda:</label>
+                                        <input type="text" class="form-control" id="edit-store" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="price" class="form-label">Precio:</label>
+                                        <input type="text" class="form-control" id="edit-price" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="categoryEdit" class="form-label">Categoría:</label>
+                                        <select class="form-select" id="edit-category" required>
+                                            <option value="ALIMENTOS">Alimentos</option>
+                                            <option value="LIMPIEZA">Limpieza</option>
+                                            <option value="SERVICIOS">Servicios</option>
+                                            <option value="TRANSPORTE">Transporte</option>
+                                            <option value="FARMACIA">Farmacia</option>
+                                            <option value="ESPARCIMIENTO">Esparcimiento</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="paymentMethod" class="form-label">Método de Pago:</label>
+                                        <select class="form-select" id="edit-paymentMethod" required>
+                                            <option value="MP">MP</option>
+                                            <option value="CUENTADNI">Cuenta DNI</option>
+                                            <option value="EFECTIVO">Efectivo</option>
+                                            <option value="DEBITO">Débito</option>
+                                            <option value="CREDITO">Crédito</option>
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary"
+                                            id="confirmEditButton">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                    </div>
+                </div>
         </section>
+
     </div>
 
-    <!-- Scripts de Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
     <!-- Scripts de Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
 
     <!-- Archivo JavaScript personalizado -->
     <script src="js/main.js"></script>
