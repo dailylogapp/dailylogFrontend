@@ -4,6 +4,36 @@ document.addEventListener("DOMContentLoaded", async function () {
   let logToDeleteId = null;
   let logToEditId = null;
 
+  // Definir colores por defecto
+  const defaultColors = {
+    backgroundColor: "rgba(201, 203, 207, 0.2)",
+    borderColor: "rgb(201, 203, 207)",
+  };
+
+  // Definir colores para cada categoría
+  const categoryColors = {
+    ALIMENTOS: {
+      backgroundColor: "rgba(255, 99, 132, 0.2)",
+      borderColor: "rgb(255, 99, 132)",
+    },
+    LIMPIEZA: {
+      backgroundColor: "rgba(255, 159, 64, 0.2)",
+      borderColor: "rgb(255, 159, 64)",
+    },
+    TRANSPORTE: {
+      backgroundColor: "rgba(255, 205, 86, 0.2)",
+      borderColor: "rgb(255, 205, 86)",
+    },
+    SERVICIOS: {
+      backgroundColor: "rgba(75, 192, 192, 0.2)",
+      borderColor: "rgb(75, 192, 192)",
+    },
+    FARMACIA: {
+      backgroundColor: "rgba(54, 162, 235, 0.2)",
+      borderColor: "rgb(54, 162, 235)",
+    },
+  };
+
   // Gráfico de totales
   try {
     const response = await axios.get(
@@ -12,26 +42,29 @@ document.addEventListener("DOMContentLoaded", async function () {
     const data = response.data;
 
     const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "ENE",
+      "FEB",
+      "MAR",
+      "ABR",
+      "MAY",
+      "JUN",
+      "JUL",
+      "AGO",
+      "SET",
+      "OCT",
+      "NOV",
+      "DIC",
     ];
 
     const categories = Object.keys(data[1]);
     const datasets = categories.map((category) => {
+      const colors = categoryColors[category] || defaultColors;
       return {
         label: category,
         data: Object.values(data).map((monthData) => monthData[category] || 0),
-        backgroundColor: getRandomColor(),
+        backgroundColor: colors.backgroundColor,
+        borderColor: colors.borderColor,
+        borderWidth: 1,
       };
     });
 
@@ -91,14 +124,23 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Gráfico donde el usuario elige categoría (interactivo)
   function mostrarGrafico(totalsByMonth) {
     const ctx = document.getElementById("chooseCategoryChart").getContext("2d");
+    const selectedCategory = document.getElementById("categoryChart").value;
+
+    // Obtener los colores de la categoría seleccionada del gráfico principal
+    const colors = categoryColors[selectedCategory] || defaultColors;
+
     monthlyCategoryChart = new Chart(ctx, {
       type: "bar",
       data: {
+        labels: Object.keys(totalsByMonth),
         datasets: [
+          // El error podría estar ocurriendo aquí
           {
             label: "Total",
-            data: totalsByMonth,
-            backgroundColor: getRandomColor(),
+            data: Object.values(totalsByMonth),
+            backgroundColor: colors.backgroundColor,
+            borderColor: colors.borderColor,
+            borderWidth: 1,
           },
         ],
       },
@@ -124,6 +166,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
+  /*
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -131,7 +174,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+  }*/
 
   // Obtener lista de logs y renderizar tabla
   axios
