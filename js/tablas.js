@@ -1,93 +1,115 @@
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
   let logToDeleteId = null;
   let logToEditId = null;
-  
-    // Obtener lista de logs y renderizar tabla
+  let logs = []; // Asegúrate de que la variable logs esté definida en un ámbito accesible
+
+  async function fetchLogs() {
     try {
       const response = await axios.get("http://localhost:8080/logs");
-      const logs = response.data;
-      const logsList = document.getElementById("logs-list");
-      logsList.innerHTML = ""; // Clear existing logs before appending
-  
-      logs.forEach((log) => {
-        const row = document.createElement("tr");
-  
-        row.innerHTML = `
-          <td>${log.id}</td>
-          <td>${log.date}</td>
-          <td>${log.description}</td>
-          <td>${log.store}</td>
-          <td>${log.price}</td>
-          <td>${log.category}</td>
-          <td>${log.paymentMethod}</td>
-          <td>
-            <button type="button" class="btn btn-warning btn-sm edit-log-button" data-log-id="${log.id}">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button type="button" class="btn btn-danger btn-sm delete-log-button" data-log-id="${log.id}">
-              <i class="bi bi-x-square"></i>
-            </button>
-          </td>
-        `;
-  
-        logsList.appendChild(row);
-      });
-  
-      // Agregar eventos a los botones de eliminación
-      document.querySelectorAll(".delete-log-button").forEach((button) => {
-        button.addEventListener("click", function () {
-          logToDeleteId = this.getAttribute("data-log-id");
-          const deleteConfirmationModal = new bootstrap.Modal(
-            document.getElementById("deleteConfirmationModal")
-          );
-          deleteConfirmationModal.show();
-        });
-      });
-  
-      // Agregar eventos a los botones de edición
-      document.querySelectorAll(".edit-log-button").forEach((button) => {
-        button.addEventListener("click", function () {
-          logToEditId = this.getAttribute("data-log-id");
-          // Llenar el modal con los datos del log
-          const log = logs.find((l) => l.id === parseInt(logToEditId));
-          if (log) {
-            document.getElementById("edit-date").value = log.date;
-            document.getElementById("edit-description").value = log.description;
-            document.getElementById("edit-store").value = log.store;
-            document.getElementById("edit-price").value = log.price;
-            document.getElementById("edit-category").value = log.category;
-            document.getElementById("edit-paymentMethod").value = log.paymentMethod;
-            const editLogModal = new bootstrap.Modal(
-              document.getElementById("editLogModal")
-            );
-            editLogModal.show();
-          }
-        });
-      });
+      logs = response.data; // Asigna los datos a la variable logs
+      renderLogs();
     } catch (error) {
       console.error("There was an error fetching the logs!", error);
     }
-  
-    // Confirmar eliminación
-    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
-    if (confirmDeleteButton) {
-      confirmDeleteButton.addEventListener("click", function () {
-        axios
-          .delete(`http://localhost:8080/logs/${logToDeleteId}`)
-          .then((response) => {
-            console.log(`Log with ID ${logToDeleteId} has been deleted.`);
-            location.reload(); // Refresh the page to reflect changes
-          })
-          .catch((error) => {
-            console.error(`There was an error deleting the log:`, error);
-          });
+  }
+
+  function renderLogs() {
+    const logsList = document.getElementById("logs-list");
+    logsList.innerHTML = ""; // Clear existing logs before appending
+
+    logs.forEach((log) => {
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+              <td>${log.id}</td>
+              <td>${log.date}</td>
+              <td>${log.description}</td>
+              <td>${log.store}</td>
+              <td>${log.price}</td>
+              <td>${log.category}</td>
+              <td>${log.paymentMethod}</td>
+              <td>
+                  <button type="button" class="btn btn-warning btn-sm edit-log-button" data-log-id="${log.id}">
+                      <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm delete-log-button" data-log-id="${log.id}">
+                      <i class="bi bi-x-square"></i>
+                  </button>
+              </td>
+          `;
+
+      logsList.appendChild(row);
+    });
+
+    // Agregar eventos a los botones de eliminación y edición
+    addEventListeners();
+  }
+
+  function addEventListeners() {
+    document.querySelectorAll(".delete-log-button").forEach((button) => {
+      button.addEventListener("click", function () {
+        logToDeleteId = this.getAttribute("data-log-id");
+        const deleteConfirmationModal = new bootstrap.Modal(
+          document.getElementById("deleteConfirmationModal")
+        );
+        deleteConfirmationModal.show();
       });
-    }
+    });
+
+    document.querySelectorAll(".edit-log-button").forEach((button) => {
+      button.addEventListener("click", function () {
+        logToEditId = this.getAttribute("data-log-id");
+        const log = logs.find((l) => l.id === parseInt(logToEditId));
+        if (log) {
+          document.getElementById("edit-date").value = log.date;
+          document.getElementById("edit-description").value = log.description;
+          document.getElementById("edit-store").value = log.store;
+          document.getElementById("edit-price").value = log.price;
+          document.getElementById("edit-category").value = log.category;
+          document.getElementById("edit-paymentMethod").value =
+            log.paymentMethod;
+          const editLogModal = new bootstrap.Modal(
+            document.getElementById("editLogModal")
+          );
+          editLogModal.show();
+        }
+      });
+    });
+  }
+
+  // Confirmar eliminación
+  const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+  if (confirmDeleteButton) {
+    confirmDeleteButton.addEventListener("click", function () {
+      axios
+        .delete(`http://localhost:8080/logs/${logToDeleteId}`)
+        .then((response) => {
+          console.log(`Log with ID ${logToDeleteId} has been deleted.`);
+          // Ocultar el modal de confirmación de eliminación
+          const deleteConfirmationModal = bootstrap.Modal.getInstance(
+            document.getElementById("deleteConfirmationModal")
+          );
+          deleteConfirmationModal.hide();
+          // Mostrar el modal de eliminación exitosa
+          const deleteSuccessModal = new bootstrap.Modal(
+            document.getElementById("deleteSuccessModal")
+          );
+          deleteSuccessModal.show();
+          // Actualizar la tabla sin recargar la página
+          logs = logs.filter((log) => log.id !== parseInt(logToDeleteId));
+          renderLogs();
+        })
+        .catch((error) => {
+          console.error(`There was an error deleting the log:`, error);
+        });
+    });
+  }
 
   // Confirmar edición
-  document
-    .getElementById("confirmEditButton")
-    .addEventListener("click", function () {
+  const confirmEditButton = document.getElementById("confirmEditButton");
+  if (confirmEditButton) {
+    confirmEditButton.addEventListener("click", function (event) {
+      event.preventDefault(); // Prevenir el envío del formulario por defecto
       const updatedLog = {
         date: document.getElementById("edit-date").value,
         description: document.getElementById("edit-description").value,
@@ -106,71 +128,73 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("editLogModal")
           );
           editLogModal.hide();
-
-          // Mostrar el modal de confirmación con el mensaje del backend
-          const confirmationModalBody = document.getElementById(
-            "confirmationModalBody"
-          );
-          confirmationModalBody.textContent = response.data; // Establecer el mensaje de confirmación en el cuerpo del modal
-          const confirmationModal = new bootstrap.Modal(
+          // Mostrar el modal de edición exitosa
+          const editSuccessModal = new bootstrap.Modal(
             document.getElementById("confirmationModal")
           );
-          confirmationModal.show();
+          document.getElementById("confirmationModalBody").innerText =
+            "El registro ha sido editado exitosamente.";
+          editSuccessModal.show();
+          // Actualizar la tabla sin recargar la página
+          const index = logs.findIndex(
+            (log) => log.id === parseInt(logToEditId)
+          );
+          if (index !== -1) {
+            logs[index] = { id: logToEditId, ...updatedLog };
+            renderLogs();
+          }
         })
         .catch((error) => {
           console.error(`There was an error updating the log:`, error);
         });
     });
+  }
 
-  // Seccion para agregar registros a la tabla
-  // Manejar el envío del formulario para agregar un nuevo registro
-
-  // Seleccionar el formulario de agregar registro
+  // Agregar un nuevo registro
   const addLogForm = document.getElementById("addLogForm");
+  if (addLogForm) {
+    addLogForm.addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevenir el envío del formulario por defecto
+      const newLog = {
+        date: document.getElementById("date").value,
+        description: document.getElementById("description").value,
+        store: document.getElementById("store").value,
+        price: document.getElementById("price").value,
+        category: document.getElementById("categoryAdd").value,
+        paymentMethod: document.getElementById("paymentMethod").value,
+      };
 
-  // Manejar el envío del formulario para agregar un nuevo registro
-  addLogForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+      axios
+        .post("http://localhost:8080/logs/addlog", newLog)
+        .then((response) => {
+          console.log("New log has been added.");
+          // Cerrar el modal de agregar registro
+          const addLogModal = bootstrap.Modal.getInstance(
+            document.getElementById("addLogModal")
+          );
+          addLogModal.hide();
+          // Mostrar el modal de confirmación de agregado de registro
+          const confirmationModal = new bootstrap.Modal(
+            document.getElementById("confirmationModal")
+          );
+          document.getElementById("confirmationModalBody").innerText =
+            "El registro ha sido agregado exitosamente.";
+          confirmationModal.show();
+          fetchLogs();
+          // Actualizar la tabla sin recargar la página
+          if (response.data) {
+            logs.push(response.data);
+            renderLogs();
+          } else {
+            console.error("Error: Response data is invalid.");
+          }
+        })
+        .catch((error) => {
+          console.error("There was an error adding the log:", error);
+        });
+    });
+  }
 
-    const log = {
-      date: document.getElementById("date").value,
-      description: document.getElementById("description").value,
-      store: document.getElementById("store").value,
-      price: parseFloat(document.getElementById("price").value),
-      category: document.getElementById("categoryAdd").value,
-      paymentMethod: document.getElementById("paymentMethod").value,
-    };
-
-    // Enviar el objeto log al backend para agregarlo a la base de datos
-    axios
-      .post("http://localhost:8080/logs/addlog", log)
-      .then((response) => {
-        // Cerrar el modal después de agregar el registro
-        const addLogModal = bootstrap.Modal.getInstance(
-          document.getElementById("addLogModal")
-        );
-        addLogModal.hide();
-
-        // Abrir el modal de confirmación con el mensaje del backend
-        const confirmationModalBody = document.getElementById(
-          "confirmationModalBody"
-        );
-        confirmationModalBody.textContent = response.data; // Establecer el mensaje de confirmación en el cuerpo del modal
-        const confirmationModal = new bootstrap.Modal(
-          document.getElementById("confirmationModal")
-        );
-        confirmationModal.show();
-
-        // Añadir evento para recargar la página al cerrar el modal de confirmación
-        document
-          .getElementById("confirmationModal")
-          .addEventListener("hidden.bs.modal", function () {
-            location.reload();
-          });
-      })
-      .catch((error) => {
-        console.error("Error al agregar el registro:", error);
-        // Manejar el error según sea necesario (por ejemplo, mostrar un mensaje de error al usuario)
-      });
-  });
+  // Cargar logs al cargar la página
+  fetchLogs();
 });
