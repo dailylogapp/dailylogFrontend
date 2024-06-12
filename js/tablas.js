@@ -1,192 +1,17 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const ctx = document.getElementById("stackedBarChart").getContext("2d");
-  let monthlyCategoryChart = null;
   let logToDeleteId = null;
   let logToEditId = null;
-
-  // Definir colores por defecto
-  const defaultColors = {
-    backgroundColor: "rgba(201, 203, 207, 0.2)",
-    borderColor: "rgb(201, 203, 207)",
-  };
-
-  // Definir colores para cada categoría
-  const categoryColors = {
-    ALIMENTOS: {
-      backgroundColor: "rgba(255, 99, 132, 0.2)",
-      borderColor: "rgb(255, 99, 132)",
-    },
-    LIMPIEZA: {
-      backgroundColor: "rgba(255, 159, 64, 0.2)",
-      borderColor: "rgb(255, 159, 64)",
-    },
-    TRANSPORTE: {
-      backgroundColor: "rgba(255, 205, 86, 0.2)",
-      borderColor: "rgb(255, 205, 86)",
-    },
-    SERVICIOS: {
-      backgroundColor: "rgba(75, 192, 192, 0.2)",
-      borderColor: "rgb(75, 192, 192)",
-    },
-    FARMACIA: {
-      backgroundColor: "rgba(54, 162, 235, 0.2)",
-      borderColor: "rgb(54, 162, 235)",
-    },
-  };
-
-  // Gráfico de totales
-  try {
-    const response = await axios.get(
-      "http://localhost:8080/logs/totalsByMonth"
-    );
-    const data = response.data;
-
-    const months = [
-      "ENE",
-      "FEB",
-      "MAR",
-      "ABR",
-      "MAY",
-      "JUN",
-      "JUL",
-      "AGO",
-      "SET",
-      "OCT",
-      "NOV",
-      "DIC",
-    ];
-
-    const categories = Object.keys(data[1]);
-    const datasets = categories.map((category) => {
-      const colors = categoryColors[category] || defaultColors;
-      return {
-        label: category,
-        data: Object.values(data).map((monthData) => monthData[category] || 0),
-        backgroundColor: colors.backgroundColor,
-        borderColor: colors.borderColor,
-        borderWidth: 1,
-      };
-    });
-
-    new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: months,
-        datasets: datasets,
-      },
-      options: {
-        plugins: {
-          title: {
-            display: true,
-            text: "Monthly Totals by Category",
-          },
-        },
-        responsive: true,
-        scales: {
-          x: {
-            stacked: true,
-          },
-          y: {
-            stacked: true,
-          },
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching data for the chart:", error);
-  }
-
-  // Configuración del botón "Generar Gráfico"
-  document
-    .getElementById("filter-form")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
-      const category = document.getElementById("categoryChart").value;
-      obtenerDatosGrafico(category);
-    });
-
-  function obtenerDatosGrafico(category) {
-    if (monthlyCategoryChart) {
-      monthlyCategoryChart.destroy();
-    }
-
-    axios
-      .get(`http://localhost:8080/logs/totalsByMonthAndCategory/${category}`)
-      .then((response) => {
-        const totalsByMonth = response.data;
-        mostrarGrafico(totalsByMonth);
-      })
-      .catch((error) => {
-        console.error(`Error al obtener los datos del gráfico:`, error);
-      });
-  }
-
-  // Gráfico donde el usuario elige categoría (interactivo)
-  function mostrarGrafico(totalsByMonth) {
-    const ctx = document.getElementById("chooseCategoryChart").getContext("2d");
-    const selectedCategory = document.getElementById("categoryChart").value;
-
-    // Obtener los colores de la categoría seleccionada del gráfico principal
-    const colors = categoryColors[selectedCategory] || defaultColors;
-
-    monthlyCategoryChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: Object.keys(totalsByMonth),
-        datasets: [
-          // El error podría estar ocurriendo aquí
-          {
-            label: "Total",
-            data: Object.values(totalsByMonth),
-            backgroundColor: colors.backgroundColor,
-            borderColor: colors.borderColor,
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: {
-            stacked: true,
-            title: {
-              display: true,
-              text: "Meses",
-            },
-          },
-          y: {
-            stacked: true,
-            title: {
-              display: true,
-              text: "Total",
-            },
-          },
-        },
-      },
-    });
-  }
-
-  /*
-  function getRandomColor() {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-  }*/
-
-  // Obtener lista de logs y renderizar tabla
-  axios
-    .get("http://localhost:8080/logs")
-    .then((response) => {
+  
+    // Obtener lista de logs y renderizar tabla
+    try {
+      const response = await axios.get("http://localhost:8080/logs");
       const logs = response.data;
       const logsList = document.getElementById("logs-list");
       logsList.innerHTML = ""; // Clear existing logs before appending
-
+  
       logs.forEach((log) => {
         const row = document.createElement("tr");
-
+  
         row.innerHTML = `
           <td>${log.id}</td>
           <td>${log.date}</td>
@@ -204,10 +29,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             </button>
           </td>
         `;
-
+  
         logsList.appendChild(row);
       });
-
+  
       // Agregar eventos a los botones de eliminación
       document.querySelectorAll(".delete-log-button").forEach((button) => {
         button.addEventListener("click", function () {
@@ -218,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
           deleteConfirmationModal.show();
         });
       });
-
+  
       // Agregar eventos a los botones de edición
       document.querySelectorAll(".edit-log-button").forEach((button) => {
         button.addEventListener("click", function () {
@@ -231,8 +56,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("edit-store").value = log.store;
             document.getElementById("edit-price").value = log.price;
             document.getElementById("edit-category").value = log.category;
-            document.getElementById("edit-paymentMethod").value =
-              log.paymentMethod;
+            document.getElementById("edit-paymentMethod").value = log.paymentMethod;
             const editLogModal = new bootstrap.Modal(
               document.getElementById("editLogModal")
             );
@@ -240,25 +64,25 @@ document.addEventListener("DOMContentLoaded", async function () {
           }
         });
       });
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("There was an error fetching the logs!", error);
-    });
-
-  // Confirmar eliminación
-  document
-    .getElementById("confirmDeleteButton")
-    .addEventListener("click", function () {
-      axios
-        .delete(`http://localhost:8080/logs/${logToDeleteId}`)
-        .then((response) => {
-          console.log(`Log with ID ${logToDeleteId} has been deleted.`);
-          location.reload(); // Refresh the page to reflect changes
-        })
-        .catch((error) => {
-          console.error(`There was an error deleting the log:`, error);
-        });
-    });
+    }
+  
+    // Confirmar eliminación
+    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+    if (confirmDeleteButton) {
+      confirmDeleteButton.addEventListener("click", function () {
+        axios
+          .delete(`http://localhost:8080/logs/${logToDeleteId}`)
+          .then((response) => {
+            console.log(`Log with ID ${logToDeleteId} has been deleted.`);
+            location.reload(); // Refresh the page to reflect changes
+          })
+          .catch((error) => {
+            console.error(`There was an error deleting the log:`, error);
+          });
+      });
+    }
 
   // Confirmar edición
   document

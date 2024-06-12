@@ -42,7 +42,7 @@
 
     <div class="container">
 
-        <section id="graficos">
+        <section id="graficos" class="mt-4">
             <h2 class="display-5">Gráficos</h2>
             <div class="row">
                 <div class="col-md-6">
@@ -72,25 +72,27 @@
             </div>
         </section>
 
-        <section id="tabla">
+        <section id="tabla" class="mt-4">
             <h1 class="mt-4 display-6">Todos los registros</h1>
-            <table class="table mt-4">
-                <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Fecha</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Tienda</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Categoría</th>
-                        <th scope="col">Método de Pago</th>
-                        <th scope="col">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="logs-list">
-                    <!-- Las filas se agregarán aquí -->
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Tienda</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Categoría</th>
+                            <th scope="col">Método de Pago</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logs-list">
+                        <!-- Las filas se agregarán aquí -->
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Botón para abrir el modal -->
             <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#addLogModal">
@@ -251,17 +253,20 @@
                             </div>
                     </div>
                 </div>
+
+
+
         </section>
-       
 
     </div>
 
-    <footer class="mt-4">
+    <footer class="footer mt-4">
         <nav class="navbar navbar-dark bg-dark">
             <div class="container-fluid justify-content-center">
                 <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img src="/assets/dailylogicon.svg" alt="" width="40" height="40" class="d-inline-block align-text-center me-2"> 
-                    <span>Copyright 2024 - Dailylog</span>                   
+                    <img src="/assets/dailylogicon.svg" alt="" width="40" height="40"
+                        class="d-inline-block align-text-center me-2">
+                    <span>Copyright 2024 - Dailylog</span>
                 </a>
             </div>
         </nav>
@@ -280,7 +285,8 @@
         crossorigin="anonymous"></script>
 
     <!-- Archivo JavaScript personalizado -->
-    <script src="js/main.js"></script>
+    <script src="js/tablas.js"></script>
+    <script src="js/graficos.js"></script>
 </body>
 
 </html>
