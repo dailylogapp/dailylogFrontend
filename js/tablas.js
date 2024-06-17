@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       axios
-        .put(`https://dailylog-8e20.onrender.com/${logToEditId}`, updatedLog)
+        .put(`https://dailylog-8e20.onrender.com/logs/update/${logToEditId}`, updatedLog)
         .then((response) => {
           console.log(`Log with ID ${logToEditId} has been updated.`);
           // Cerrar el modal de edición
