@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function fetchLogs() {
     try {
-      const response = await axios.get("http://localhost:8080/logs");
+      const response = await axios.get("https://dailylog-8e20.onrender.com/logs");
       logs = response.data; // Asigna los datos a la variable logs
       renderLogs();
     } catch (error) {
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (confirmDeleteButton) {
     confirmDeleteButton.addEventListener("click", function () {
       axios
-        .delete(`http://localhost:8080/logs/${logToDeleteId}`)
+        .delete(`https://dailylog-8e20.onrender.com/logs/${logToDeleteId}`)
         .then((response) => {
           console.log(`Log with ID ${logToDeleteId} has been deleted.`);
           // Ocultar el modal de confirmación de eliminación
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       axios
-        .put(`http://localhost:8080/logs/update/${logToEditId}`, updatedLog)
+        .put(`https://dailylog-8e20.onrender.com/${logToEditId}`, updatedLog)
         .then((response) => {
           console.log(`Log with ID ${logToEditId} has been updated.`);
           // Cerrar el modal de edición
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       axios
-        .post("http://localhost:8080/logs/addlog", newLog)
+        .post("https://dailylog-8e20.onrender.com/addlog", newLog)
         .then((response) => {
           console.log("New log has been added.");
           // Cerrar el modal de agregar registro

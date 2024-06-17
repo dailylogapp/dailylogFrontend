@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Gráfico de totales
   try {
     const response = await axios.get(
-      "http://localhost:8080/logs/totalsByMonth"
+      "https://dailylog-8e20.onrender.com/logs/totalsByMonth"
     );
     const data = response.data;
 
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     axios
-      .get(`http://localhost:8080/logs/totalsByMonthAndCategory/${category}`)
+      .get(`https://dailylog-8e20.onrender.com/logs/totalsByMonthAndCategory/${category}`)
       .then((response) => {
         const totalsByMonth = response.data;
         mostrarGrafico(totalsByMonth);
