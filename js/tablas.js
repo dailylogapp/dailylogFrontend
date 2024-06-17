@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       axios
-        .post("https://dailylog-8e20.onrender.com/addlog", newLog)
+        .post("https://dailylog-8e20.onrender.com/logs/addlog", newLog)
         .then((response) => {
           console.log("New log has been added.");
           // Cerrar el modal de agregar registro
