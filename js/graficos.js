@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const ctx = document.getElementById("stackedBarChart").getContext("2d");
+  const totalCtx = document.getElementById("totalBarChart").getContext("2d"); // Nuevo contexto para el gráfico total
   let monthlyCategoryChart = null;
-  
 
   // Definir colores por defecto
   const defaultColors = {
@@ -91,6 +91,49 @@ document.addEventListener("DOMContentLoaded", async function () {
         },
       },
     });
+
+    // Obtener los totales de cada mes desde el endpoint
+    const totalData = await Promise.all(
+      months.map(async (_, index) => {
+        const response = await axios.get(
+          `https://dailylog-8e20.onrender.com/logs/totalMes/${index + 1}`
+        );
+        return response.data.total; // Asume que la respuesta contiene el total en 'response.data.total'
+      })
+    );
+
+    new Chart(totalCtx, {
+      type: "bar",
+      data: {
+        labels: months,
+        datasets: [
+          {
+            label: "Total por Mes",
+            data: totalData,
+            backgroundColor: "rgba(54, 162, 235, 0.2)",
+            borderColor: "rgb(54, 162, 235)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: "Total por Mes (Todas las Categorías)",
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            stacked: false,
+          },
+          y: {
+            stacked: false,
+          },
+        },
+      },
+    });
   } catch (error) {
     console.error("Error fetching data for the chart:", error);
   }
@@ -110,7 +153,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     axios
-      .get(`https://dailylog-8e20.onrender.com/logs/totalsByMonthAndCategory/${category}`)
+      .get(
+        `https://dailylog-8e20.onrender.com/logs/totalsByMonthAndCategory/${category}`
+      )
       .then((response) => {
         const totalsByMonth = response.data;
         mostrarGrafico(totalsByMonth);
