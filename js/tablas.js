@@ -9,17 +9,28 @@ document.addEventListener("DOMContentLoaded", function () {
       try {
           const response = await axios.get(
             /* Entorno produccion*/
-              `https://dailylog-8e20.onrender.com/logs?page=${page}&size=${pageSize}`              
+              `https://dailylog-8e20.onrender.com/logs/paged?page=${page}&size=${pageSize}`              
 
               /*Entorno local
               `http://localhost:8080/logs/paged`*/
           );
-          logs = response.data.content;
-          renderLogs();
-          renderPagination(response.data.totalPages, page);
-      } catch (error) {
-          console.error("There was an error fetching the logs!", error);
-      }
+
+          // Agregar logs de depuración
+        console.log("Response data:", response.data);
+
+        // Verificar que la respuesta tiene datos válidos
+        if (response.data && Array.isArray(response.data.content)) {
+            logs = response.data.content;
+            renderLogs();
+            renderPagination(response.data.totalPages, page);
+        } else {
+            console.error("La respuesta no contiene datos válidos.");
+            logs = [];
+            renderLogs(); // Renderizar aunque logs esté vacío
+        }
+    } catch (error) {
+        console.error("There was an error fetching the logs!", error);
+    }
   }
 
   function renderLogs() {
